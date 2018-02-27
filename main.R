@@ -103,6 +103,8 @@ join.result.data <- left_join(result.data, cities.code)
 
 #Remove Hawaii and alaska due to they are not in the mainland
 join.result.data <- filter(join.result.data, state != "Hawaii" && state != "Alaska")
+join.result.data$long <-  as.double(as.character(join.result.data$long))
+join.result.data$lat <- as.double(as.character(join.result.data$lat))
 
 
 us <- map_data("state")
