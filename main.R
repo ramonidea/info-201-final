@@ -26,39 +26,44 @@ base.url <- "https://app.ticketmaster.com/discovery/v2/"
 #Init the final data frame get from the loop.
 final.result.data <- NULL
 
-for(i in c(0:4)){
-  page <- i #Set the page number 
-  #----------------Receive the data from the API (In this example, # of events will receive is 200(max), in US, and Music related)
-  music.url <- paste0(base.url, "events.json?apikey=",api.key,'&size=200&countryCode=US&classificationName=Music&page=',page)
-  response <- GET(music.url)
-  body.data <- fromJSON(content(response,"text"),simplifyVector=TRUE,simplifyDataFrame=TRUE)
-  result.data <- body.data$`_embedded`$events
-  #-----------Start cleaning the data and only left, name, genere, location..etc.
-  #Due to the special of the data frame received from the API.
-  #The genre, Location(under Venue) are lists of data frame
-  #I have to use another for loop to get the data out.
-  state.name <- c()
-  city.name <- c()
-  genre.name <- c()
-  for (j in c(1:200)){
-    state.name <-c(state.name, result.data$`_embedded`$venues[[j]]$state$name)
-    city.name <- c(city.name, result.data$`_embedded`$venues[[j]]$city$name)
-    genre.name <- c(genre.name, result.data$classifications[[j]]$genre$name)
+getMusicEvents <- function(){
+  for(i in c(0:4)){
+    page <- i #Set the page number 
+    #----------------Receive the data from the API (In this example, # of events will receive is 200(max), in US, and Music related)
+    music.url <- paste0(base.url, "events.json?apikey=",api.key,'&size=200&countryCode=US&classificationName=Music&page=',page)
+    response <- GET(music.url)
+    body.data <- fromJSON(content(response,"text"),simplifyVector=TRUE,simplifyDataFrame=TRUE)
+    result.data <- body.data$`_embedded`$events
+    #-----------Start cleaning the data and only left, name, genere, location..etc.
+    #Due to the special of the data frame received from the API.
+    #The genre, Location(under Venue) are lists of data frame
+    #I have to use another for loop to get the data out.
+    state.name <- c()
+    city.name <- c()
+    genre.name <- c()
+    for (j in c(1:200)){
+      state.name <-c(state.name, result.data$`_embedded`$venues[[j]]$state$name)
+      city.name <- c(city.name, result.data$`_embedded`$venues[[j]]$city$name)
+      genre.name <- c(genre.name, result.data$classifications[[j]]$genre$name)
+    }
+    #Here we have three list of the state, city, genre name.
+    #--------And we update the result data to have only essential columns
+    result.data <- 
+      result.data %>% 
+      select(name, id) %>% 
+      mutate(city = city.name,genre = genre.name, state = state.name)
+    #-----------------Append the data frame with the fijnal.result.data
+    #If the fitst, just replace it, afterwards, using rbind to append the data on the dataframe
+    if(is.null(final.result.data)){
+      final.result.data <- result.data
+    } else{
+      final.result.data <- rbind(final.result.data,result.data)
+    }
   }
-  #Here we have three list of the state, city, genre name.
-  #--------And we update the result data to have only essential columns
-  result.data <- 
-    result.data %>% 
-    select(name, id) %>% 
-    mutate(city = city.name,genre = genre.name, state = state.name)
-  #-----------------Append the data frame with the fijnal.result.data
-  #If the fitst, just replace it, afterwards, using rbind to append the data on the dataframe
-  if(is.null(final.result.data)){
-    final.result.data <- result.data
-  } else{
-    final.result.data <- rbind(final.result.data,result.data)
-  }
+  return(final.result.data)
 }
+#---------------------Only call once and take a while
+final.result.data <- getMusicEvents()
 
 #final.result.data wrangliing
 #In this example, it group by the city, and genre, to figure out the max genre in each city
