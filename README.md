@@ -6,17 +6,17 @@ info-201-final-project
 Use Shiny to show different types of data obtained from TicketMaster API
 
 ### Music
-- Number of sales for each Genre of music concerts
-  - Analysis : what genre of music sells the most tickets
+- Number of music concerts for each Genre 
+  - Analysis : what genre of music is the main market
 - Seattle Local Music concerts
   - artist concert demands
-    - Which artist has the highest demand/popularity
+    - Which artist has the highest events at one place??
 
 ### Sports
-- number of tickets sold for each sports
+- Sports Event popularity
   - which sports is the most popular in (what area)
 - Football popularity
-  - The number of the football tickets sales in each state.
-- Football tickets price throughout the year, (season price and off season price)
-- UW Sports ticket price for different sports
+  - The number of the football events in each state.
+- Football tickets price 
+- UW Sports ticket price 
   - Which sports is the most expensive during the school year?
