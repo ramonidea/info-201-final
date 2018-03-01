@@ -64,8 +64,8 @@ GetCityGeo <- function(names){
       temp <- geocode_single_city(i)
       long <- c(long, temp[1])
       lat <- c(lat, temp[2])
-      name <- c(name, temp[3])
-      cities.code[nrow(cities.code) + 1,] = c(temp[1],temp[2],temp[3])
+      name <- c(name, i)
+      cities.code[nrow(cities.code) + 1,] = c(temp[1],temp[2],i)
     }
   }
   if(f){
@@ -74,5 +74,3 @@ GetCityGeo <- function(names){
   }
   return(data.frame(long = long, lat = lat, city = name))
 }
-
-

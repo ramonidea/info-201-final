@@ -4,32 +4,35 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author:" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <title>INFO 201 Final Project</title>
   <!-- Bootstrap core CSS-->
   <link href="vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
   <!-- Custom fonts for this template-->
+  <link href="https://use.fontawesome.com/releases/v5.0.7/css/all.css" rel="stylesheet">
   <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
   <!-- Custom styles for this template-->
   <link href="css/sb-admin.css" rel="stylesheet">
 
 <!--For plotly-->
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <script type="application/shiny-singletons"></script>
-  <script type="application/html-dependencies">json2[2014.02.04];jquery[1.12.4];shiny[1.0.5];htmlwidgets[1.0];plotly-binding[4.7.1];bootstrap[3.3.7]</script>
-  <script src="shared/json2-min.js"></script>
-  <script src="shared/jquery.min.js"></script>
-  <link href="shared/shiny.css" rel="stylesheet" />
-  <script src="shared/shiny.min.js"></script>
-  <script src="htmlwidgets-1.0/htmlwidgets.js"></script>
-  <script src="plotly-binding-4.7.1/plotly.js"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="shared/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-  <script src="shared/bootstrap/js/bootstrap.min.js"></script>
-  <script src="shared/bootstrap/shim/html5shiv.min.js"></script>
-  <script src="shared/bootstrap/shim/respond.min.js"></script>
+
+ <script type="application/shiny-singletons"></script>
+ <script type="application/html-dependencies">json2[2014.02.04];jquery[1.12.4];shiny[1.0.5];htmlwidgets[1.0];plotly-binding[4.7.1];bootstrap[3.3.7]</script>
+<script src="shared/json2-min.js"></script>
+<script src="shared/jquery.min.js"></script>
+<link href="shared/shiny.css" rel="stylesheet" />
+<script src="shared/shiny.min.js"></script>
+<script src="htmlwidgets-1.0/htmlwidgets.js"></script>
+<script src="plotly-binding-4.7.1/plotly.js"></script>
+
+<link href="shared/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<script src="shared/bootstrap/js/bootstrap.min.js"></script>
+<script src="shared/bootstrap/shim/html5shiv.min.js"></script>
+<script src="shared/bootstrap/shim/respond.min.js"></script>
 
   {{ headContent() }}
 </head>
@@ -49,11 +52,41 @@
         </li>
 
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Music Events">
-          {{music}}
+
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseComponents" data-parent="#exampleAccordion">
+                <i class="fa fa-fw fa-music fa-2x"></i>
+                <button id="music_btn" type="button" class="btn btn-default action-button">Music Event</button>
+          </a>
+
+          <ul class="sidenav-second-level collapse" id="collapseComponents">
+            <li>
+              <button id="music_pop_btn" type="button" class="btn btn-default action-button">Music Popularity</button>
+            </li>
+            <hr style="border-color:#a7aebe;margin-left:4em">
+            <li>
+              <button id="music_pri_btn" type="button" class="btn btn-default action-button">Music Price</button>
+            </li>
+          </ul>
+
+
           <hr>
         </li>
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Sport Events">
-          {{sport}}
+
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseSports" data-parent="#exampleAccordion">
+                <i class="fa fa-fw fa-basket-ball"></i>
+                <button id="sport_btn" type="button" class="btn btn-default action-button">Sport Event</button>
+          </a>
+
+          <ul class="sidenav-second-level collapse" id="collapseSports">
+            <li>
+              <button id="sport_pop_btn" type="button" class="btn btn-default action-button">Sport Popularity</button>
+            </li>
+            <hr style="border-color:#a7aebe;margin-left:4em">
+            <li>
+              <button id="sport_pri_btn" type="button" class="btn btn-default action-button">Sport Price</button>
+            </li>
+          </ul>
         </li>
 
 
@@ -72,7 +105,6 @@
 
 
           <!-- Bootstrap core JavaScript-->
-          <script src="vendor/jquery/jquery.min.js"></script>
           <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
           <!-- Core plugin JavaScript-->
           <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
@@ -85,5 +117,3 @@
 
         </div>
       </body>
-
-      </html>
