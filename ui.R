@@ -1,5 +1,5 @@
 library(shiny)
-source("main.R")
+#source("main.R")
 library(shinyjs)
 library(plotly)
 
@@ -17,10 +17,24 @@ ui <- htmlTemplate(
         "dashboard",
         #------Dashboard--------
         tags$h3("Dash Board Page")
-        # plotlyOutput("lineplot")
         #-----End-------
       ),
-      
+      tabPanel("music",
+               tabsetPanel(
+                 id = "music_sub",
+                 tabPanel(
+                   "mus_pop",
+                   #-----Music Popularity------
+                   tags$h3("music popularity page")
+                   #------End-------
+                 ),
+                 tabPanel(
+                   "mus_pri",
+                   #------Music Price Range---
+                   tags$h3("Music price range Page")
+                   #------end---------
+                 )
+               )),
       tabPanel('sport',
                tabsetPanel(
                  id = "sport_sub",
@@ -28,8 +42,8 @@ ui <- htmlTemplate(
                    "sport_pop",
                    #-----Sport Popularity------
                    tags$h3("Sport Popularity Page"),
-                   plotOutput('sports_pop_map'),
-                   plotOutput("piechart")
+                   plotlyOutput('sports_pop_map'),
+                   plotlyOutput('sports_pop_pie')
                    #-----End------
                  ),
                  tabPanel(

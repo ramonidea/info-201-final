@@ -41,8 +41,13 @@ server <- function(input, output, session) {
     return('Here is the INTRO Part')
   })
   
-  output$sports_pop_map <- renderPlot({
+  output$sports_pop_map <- renderPlotly({
     return(sports.pop.map)
   })
   
+  output$sports_pop_pie <- renderPlotly({
+    return(sports.pop.pie)
+  })
+  
 }
+shinyServer(server)
