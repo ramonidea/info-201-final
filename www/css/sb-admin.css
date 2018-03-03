@@ -28,8 +28,13 @@ a .navbar-brand {
   border-color: #6D7993;
 }
 
+.ss ul{
+  display: inline !important;
+}
 
-
+ul .events-root{
+  display: inline !important;
+}
 
 .col-sm-12 div ul:first-of-type{
   display: none;
