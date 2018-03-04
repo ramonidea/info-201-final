@@ -32,10 +32,6 @@ a .navbar-brand {
   display: inline !important;
 }
 
-ul .events-root{
-  display: inline !important;
-}
-
 .col-sm-12 div ul:first-of-type{
   display: none;
 }
