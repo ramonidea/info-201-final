@@ -1,10 +1,10 @@
 library(shiny)
-#source("main.R")
+source("main.R")
 library(shinyjs)
 library(plotly)
 source("api.R")
 
-Sys.setenv('MAPBOX_TOKEN' = MAPBOX_TOKEN)
+
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output, session) {
@@ -36,23 +36,29 @@ server <- function(input, output, session) {
   })
   #=============END======================
 
+
   
   output$intro <- renderText({
     return('Here is the INTRO Part')
   })
   
-  output$lineplot <- renderPlotly({
-    #return(plot_ly(mtcars,x=~mpg,y=~disp,type="box"))
- # ggplot(data = mtcars)+
- #     geom_smooth(aes(x = mpg, y =disp), color="red")
-    plot_ly(mtcars, x = ~mpg, y = ~wt)
+  output$stateCountMap <- renderPlotly({
+    getCountryCountMap()
+    })
+  
+  output$topstate <- renderTable({
+    return()
   })
-    
-  output$barchart <- renderPlot({
-    ggplot(data = mtcars)+
-      geom_bar(aes(x = mpg, y = disp, fill = am),stat = "identity", width  =0.5)
-    
+  
+  output$topcity <- renderTable({
+    return ()
   })
+  
+  
+  
+
+    
+ 
   
   output$mapEx <- renderPlotly({
     #Map example
@@ -77,18 +83,6 @@ server <- function(input, output, session) {
                            pad = 2))
     p
   })
-  
-  output$piechart <- renderPlot({
-    
-    ggplot(data = mtcars)+
-      geom_bar(aes(x = factor(1), y = disp, fill = am),stat = "identity", width  =0.5, position = "stack")+
-      coord_polar("y", start = 0)
-    
-  })
-  
-  output$datatable <- renderDataTable({
-    return(mtcars)
-  })
-  
+ 
   
 }

@@ -1,5 +1,4 @@
 library(shiny)
-#source("main.R")
 library(shinyjs)
 library(plotly)
 
@@ -17,7 +16,9 @@ ui <- htmlTemplate(
         "dashboard",
         #------Dashboard--------
         tags$h3("Dash Board Page"),
-        plotlyOutput("lineplot")
+        HTML('<div w-type="event-discovery" w-tmapikey="eaiIn2TBGoRwIeogbqahEzo08X8NAz8w" w-googleapikey="AIzaSyCCCPlLZ9dWptKlpgGM3EkrAx7kHG6V92g" w-keyword="" w-theme="simple" w-colorscheme="light" w-width="500" w-height="600" w-size="25" w-border="0" w-borderradius="4" w-postalcode="" w-radius="25" w-period="week" w-layout="vertical" w-attractionid="" w-promoterid="" w-venueid="" w-affiliateid="" w-segmentid="" w-proportion="custom" w-titlelink="off" w-countrycode="US" w-source="" w-city="Seattle" w-latlong=""></div>'),
+        HTML('<script src="js/main-widget.js"></script>'),
+        textOutput("intro")
         #-----End-------
       ),
       tabPanel("music",
@@ -26,15 +27,24 @@ ui <- htmlTemplate(
                  tabPanel(
                    "mus_pop",
                    #-----Music Popularity------
-                   tags$h3("music popularity page"),
-                   plotOutput("barchart")
+                   tags$h2("Data Report - Music Events (Popularity)"),
+                   tags$br(),
+                   tags$h4("The Music Events in the 5 months across the country"),
+                   tags$p("In the map shown below, the color filled in each states indicates the number of the music related events in each state. 
+                          It generally shows how music events distributed in the U.S. and the potential demands among those states."),
+                   plotlyOutput("stateCountMap"),
+                   tags$p("In the map, the color "),
+                  tableOutput("topstate"),
+                  tableOutput("topcity")
+                   
+                   
                    #------End-------
                  ),
                  tabPanel(
-                   "mus_pri",
+                   "mus_pri"
                    #------Music Price Range---
-                   tags$h3("Music price range Page"),
-                   plotlyOutput("mapEx")
+                   
+                   
                    #------end---------
                    )
                )),
@@ -42,17 +52,15 @@ ui <- htmlTemplate(
                tabsetPanel(
                  id = "sport_sub",
                  tabPanel(
-                   "sport_pop",
+                   "sport_pop"
                    #-----Sport Popularity------
-                   tags$h3("Sport Popularity Page"),
-                   plotOutput("piechart")
+                   
                    #-----End------
                  ),
                  tabPanel(
-                   "sport_pri",
+                   "sport_pri"
                    #-----Sport Price------
-                   tags$h3("Sport Price Range Page"),
-                   dataTableOutput("datatable")
+                   
                    #-----------End-------------
                  )
                ))
