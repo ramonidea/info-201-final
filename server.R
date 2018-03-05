@@ -47,11 +47,15 @@ server <- function(input, output, session) {
     })
   
   output$topstate <- renderTable({
-    return()
+    return(getTopCities())
   })
   
   output$topcity <- renderTable({
-    return ()
+    return (getTopStates())
+  })
+  
+  output$genre.state <- renderPlot({
+    return(getGenreMap(input$genre.pop))
   })
   
   

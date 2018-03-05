@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyjs)
 library(plotly)
+source("main.R")
 
 ui <- htmlTemplate(
   "./www/index.html",
@@ -33,9 +34,24 @@ ui <- htmlTemplate(
                    tags$p("In the map shown below, the color filled in each states indicates the number of the music related events in each state. 
                           It generally shows how music events distributed in the U.S. and the potential demands among those states."),
                    plotlyOutput("stateCountMap"),
-                   tags$p("In the map, the color "),
+                   tags$p("In the map, the darker the color is, the more events happening in that state.
+                          The red spots shows the events's city/town and the size of the dot shows the number of the events.
+                          The more music events one city/state has, it potentially shows the music events demand in that place."),
+                   tags$br(),
+                   tags$p("The Tables below showing the top cities and states which going to have music events in the next 5 months.
+                          According to the city list, Las Vegas, NYC and Chicago are in the top 3. However, Neither New York nor Nevada states are the top one in the state list.
+                          This clearly shows the Californian has strong interest in music and it is not only in LA, but throught the whole California.
+                          In total, they have 155 events. On the other side, Wyoming and arkansas do not have any music related events. They may have smaller events which are not selling tickets on the TicketMaster,
+                          but their music demands is definitely smaller than others. For a music event planner, they would love to take look at these data to guess the potential demands among states,
+                          and arrange different time and number of shows."),
                   tableOutput("topstate"),
-                  tableOutput("topcity")
+                  tableOutput("topcity"),
+                  tags$br(),
+                  tags$p("Below the Map shows the number of events by different genres of the music.
+                         It allows people to arrange their events to the place which have more potential for the genre of the music.
+                         You may select the type of genres to view the map."),
+                  selectInput("genre.pop",choices = getGenres(),label = "Music Genre", selected = "Pop"),
+                  plotOutput("genre.state",width = 600)
                    
                    
                    #------End-------

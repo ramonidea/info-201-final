@@ -10,14 +10,14 @@ library(stringi)
 library(stringr)
 library(plotly)
 
-Sys.setenv('MAPBOX_TOKEN' = MAPBOX_TOKEN)
+
 
 #devtools::install_github("ropensci/plotly")
 #The Main function to do data wrangling
 
 source("api.R")
 #Retrieve the api key (api.key)
-
+Sys.setenv('MAPBOX_TOKEN' = MAPBOX_TOKEN)
 source("helper.R")
 #Source the helper method to get the city long, lat
 
@@ -80,6 +80,35 @@ getMusicCountry <- function(){
 
 result.country.music <- getMusicCountry()
 
+getGenres <- function(){
+    return(unique(result.country.music$genre))
+}
+
+getGenreMap <- function(genre.choice){
+  
+  us <- map_data("state")
+  us$state = stringr::str_to_title(us$region)
+  
+  genre.state <- 
+    result.country.music %>% 
+    filter(genre == genre.choice) %>% 
+    group_by(state) %>% 
+    summarise(Event_Number = n()) %>% 
+    arrange(Event_Number) %>% 
+    left_join(us)
+  
+  
+  
+  gg <- ggplot()+
+    geom_map(data = us, map = us, aes(x = long, y = lat, map_id = region),
+                                color = "dark gray",fill = "black",size = 0.05)+
+    geom_map(data = genre.state, map = us, aes(fill = Event_Number,map_id = region))
+
+  return(gg)
+  
+}
+
+
 getCountryCountMap <- function(){
       print("Start Processing Data.....")
       
@@ -92,8 +121,10 @@ getCountryCountMap <- function(){
         result.country.music %>% 
         group_by(code,state) %>% 
         summarise(n = n()) %>% 
-        mutate(hover = paste(state, '<br>',"Number of Events:", n), n = cut(n,40)) %>% 
-        full_join(us, by="state")
+        arrange(n) %>% 
+        mutate(hover = paste(state, '<br>',"Number of Events:", n)) %>% 
+        full_join(us, by="state") %>% 
+        mutate(n = cut(n,breaks = seq(0, 220, by = 10)))
       
       #Make an unique city list from the data frame
       cities <- c(as.character(unique(paste0(result.country.music$city,",",result.country.music$state))))
@@ -112,11 +143,11 @@ getCountryCountMap <- function(){
         na.omit() %>% 
         mutate(long = as.double(as.character(long)), lat = as.double(as.character(lat))    )
       
-     # state.count.map <- 
+      state.count.map <- 
         states.music.count %>%
         group_by(group) %>% 
         plot_mapbox(x = ~long, y = ~lat, color = ~n, colors = c('#ffeda0','#f03b20'),
-                    text = ~hover, hoverinfo = 'text', showlegend = TRUE) %>%
+                    text = ~hover, hoverinfo = 'text', showlegend = FALSE) %>%
         add_polygons(line = list(width = 0.4)) %>% 
         add_polygons(fillcolor = 'transparent',
                      line = list(color = 'black', width = 0.5),
@@ -130,7 +161,7 @@ getCountryCountMap <- function(){
           plot_bgcolor = '#191A1A', paper_bgcolor = '#191A1A',
           mapbox = list(style = 'dark',
                         center = list(lat = 39.8283, lon = -98.5795),
-                        zoom = 4),
+                        zoom = 3),
           xaxis = list(title = "", showgrid = FALSE, showticklabels = FALSE),
           yaxis = list(title = "", showgrid = FALSE, showticklabels = FALSE),
           margin = list(l = 0, r = 0, b = 0, t = 0, pad = 0)
@@ -140,19 +171,31 @@ return(state.count.map)
 }
 
 
+getTopCities <- function(){
+  top.cities <-
+    cities.music.count <-
+    result.country.music %>% 
+    group_by(code,city,state) %>% 
+    filter(!state %in% c("Alaska","Hawaii")) %>% 
+    summarise(Event_Number = n()) %>% 
+    na.omit() %>% 
+    arrange(-Event_Number) 
+  top.cities <- top.cities[c(1:5),]
+  return (top.cities)
+}
 
-# top.cities <-
-#   cities.music.count %>% 
-#   arrange(-n) %>% 
-#   top_n(5)
-# 
-# top.states <-
-#   result.country.music %>% 
-#   group_by(code,state) %>% 
-#   summarise(n = n()) %>% 
-#   arrange(-n)
-# 
-# top.states <- top.states[c(1:5),]
+getTopStates <- function(){
+  top.states <-
+    result.country.music %>% 
+    group_by(code,state) %>%
+    summarise(Event_Number = n()) %>%
+    arrange(-Event_Number)
+  
+  top.states <- top.states[c(1:5),]
+  return(top.states)
+}
+
+
 
 
 
