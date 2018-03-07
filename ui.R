@@ -1,6 +1,5 @@
 library(shiny)
 library(plotly)
-library(shinyjs)
 
 ui <- htmlTemplate(
   "./www/index.html",
@@ -80,7 +79,7 @@ ui <- htmlTemplate(
                    tags$h4("Data Report:"),
                    tags$body(paste0("This is a data report for music events in three cities: Seattle, Los Angeles, and New York.
                                     The most cheap music event is ",most.cheap$name, " in ", most.cheap$City,
-                                    "and the most expensive music event is ", most.expensive$name, " in ", most.expensive$City),
+                                    "and the most expensive music event is ", most.expensive$name, " in ", most.expensive$City)),
                    tableOutput('music_min_price'),
                    tableOutput('music_max_price'),
                    plotlyOutput('seattle'),
@@ -117,4 +116,3 @@ ui <- htmlTemplate(
     )
   ))
 )
-shinyUI(ui)
