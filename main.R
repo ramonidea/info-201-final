@@ -108,42 +108,39 @@ getGenreMap <- function(genre.choice){
   
 }
 
+#### Which state or city has the most events happening in the next 5 months
+us <- map_data("state")
+us$state <- stringr::str_to_title(us$region)
 
-getCountryCountMap <- function(){
-      print("Start Processing Data.....")
-      
-      
-      #### Which state or city has the most events happening in the next 5 months
-      us <- map_data("state")
-      us$state <- stringr::str_to_title(us$region)
-      
-      states.music.count <- 
-        result.country.music %>% 
-        group_by(code,state) %>% 
-        summarise(n = n()) %>% 
-        arrange(n) %>% 
-        mutate(hover = paste(state, '<br>',"Number of Events:", n)) %>% 
-        full_join(us, by="state") %>% 
-        mutate(n = cut(n,breaks = seq(0, 220, by = 10)))
-      
-      #Make an unique city list from the data frame
-      cities <- c(as.character(unique(paste0(result.country.music$city,",",result.country.music$state))))
-      #Get the Cities loc by using helper method
-      cities.code <-  GetCityGeo(cities)
-      
-      cities.music.count <-
-        result.country.music %>% 
-        group_by(code,city,state) %>% 
-        filter(!state %in% c("Alaska","Hawaii")) %>% 
-        summarise(n = n()) %>% 
-        ungroup(city) %>% 
-        mutate(city = paste0(city,',',state)) %>% 
-        mutate(hover = paste(city, '<br>',"Number of Events:", n)) %>% 
-        left_join(cities.code) %>% 
-        na.omit() %>% 
-        mutate(long = as.double(as.character(long)), lat = as.double(as.character(lat))    )
-      
-      state.count.map <- 
+states.music.count <- 
+  result.country.music %>% 
+  group_by(code,state) %>% 
+  summarise(n = n()) %>% 
+  arrange(n) %>% 
+  mutate(hover = paste(state, '<br>',"Number of Events:", n)) %>% 
+  full_join(us, by="state") %>% 
+  mutate(n = cut(n,breaks = seq(0, 220, by = 10)))
+
+#Make an unique city list from the data frame
+cities <- c(as.character(unique(paste0(result.country.music$city,",",result.country.music$state))))
+#Get the Cities loc by using helper method
+cities.code <-  GetCityGeo(cities)
+
+cities.music.count <-
+  result.country.music %>% 
+  group_by(code,city,state) %>% 
+  filter(!state %in% c("Alaska","Hawaii")) %>% 
+  summarise(n = n()) %>% 
+  ungroup(city) %>% 
+  mutate(city = paste0(city,',',state)) %>% 
+  mutate(hover = paste(city, '<br>',"Number of Events:", n)) %>% 
+  left_join(cities.code) %>% 
+  na.omit() %>% 
+  mutate(long = as.double(as.character(long)), lat = as.double(as.character(lat)))
+
+
+
+ state.count.map <- 
         states.music.count %>%
         group_by(group) %>% 
         plot_mapbox(x = ~long, y = ~lat, color = ~n, colors = c('#ffeda0','#f03b20'),
@@ -167,8 +164,6 @@ getCountryCountMap <- function(){
           margin = list(l = 0, r = 0, b = 0, t = 0, pad = 0)
         )
 
-return(state.count.map)
-}
 
 
 getTopCities <- function(){
@@ -197,97 +192,3 @@ getTopStates <- function(){
 
 
 
-
-
-# 
-# 
-# 
-# states.genre.map %>%
-#   plot_mapbox(mode = 'scattermapbox',split=~genre) %>%
-#   add_markers( x = ~long, y = ~lat, text=~genre,
-#     size = ~n, hoverinfo ="text", alpha = 0.8) %>%
-#   layout(title = 'Event City Map in 5 Months',
-#          hovermode = 'closest',
-#          font = list(color='white'),
-#          plot_bgcolor = '#191A1A', paper_bgcolor = '#191A1A',
-#          mapbox = list(style = 'dark'),
-#          legend = list(orientation = 'h',
-#                        font = list(size = 8)),
-#          margin = list(l = 25, r = 25,
-#                        b = 25, t = 25,
-#                        pad = 2))
-# 
-#     
-# 
-# 
-# 
-# 
-# 
-# 
-# #final.result.data wrangliing
-# #In this example, it group by the city, and genre, to figure out the max genre in each city
-# result.data.bystate <- 
-#   final.result.data %>% 
-#   group_by(city, genre, state) %>% 
-#   summarise(n = n()) %>% 
-#   group_by(city,state) %>% 
-#   filter(n == max(n)) %>% 
-#   ungroup(city) %>% 
-#   mutate(city = paste0(city,",",state))
-# # city                       genre            state          n
-# # 1 Minneapolis,Minnesota    Dance/Electronic Minnesota      1
-# # 2 Agoura Hills,California  R&B              California     1
-# # 3 Albany,New York          Rock             New York       2
-# # 4 Albuquerque,New Mexico   Country          New Mexico     2
-# # 5 Allen,Texas              R&B              Texas          1
-# # 6 Alpharetta,Georgia       Rock             Georgia        3
-# 
-# #Make an unique city list from the data frame
-# cities <- c(as.character(unique(paste0(final.result.data$city,",",final.result.data$state))))
-# #Get the Cities loc by using helper method
-# cities.code <-  GetCityGeo(cities)
-# # long      lat                 city
-# # 1  -87.90647 43.03890  Milwaukee,Wisconsin
-# # 2  -95.99277 36.15398       Tulsa,Oklahoma
-# # 3 -115.17456 36.10237    New York,New York
-# # 4  -75.11962 39.92595    Camden,New Jersey
-# # 5 -118.35313 33.96168 Inglewood,California
-# # 6  -73.59291 40.70038   Uniondale,New York
-# 
-# #Make the cify full name in "city,state" format
-# result.data$city <- paste0(result.data$city,",",result.data$state)
-# 
-# #left join two data frame
-# join.result.data <- left_join(result.data, cities.code)
-# # city                     genre            state          n   long   lat
-# # 1 " Minneapolis,Minnesota" Dance/Electronic Minnesota      1 - 93.3  45.0
-# # 2 Agoura Hills,California  R&B              California     1 -119    34.2
-# # 3 Albany,New York          Rock             New York       2 - 73.8  42.7
-# # 4 Albuquerque,New Mexico   Country          New Mexico     2 -107    35.1
-# # 5 Allen,Texas              R&B              Texas          1 - 96.7  33.1
-# # 6 Alpharetta,Georgia       Rock             Georgia        3 - 84.3  34.1
-# 
-# #Remove Hawaii and alaska due to they are not in the mainland
-# join.result.data <- filter(join.result.data, state != "Hawaii" && state != "Alaska")
-# join.result.data$long <-  as.double(as.character(join.result.data$long))
-# join.result.data$lat <- as.double(as.character(join.result.data$lat))
-# 
-# us <- map_data("state")
-# us$state <- stringr::str_to_title(us$region)
-# #--------------------------
-# join.result.data.bystate <-left_join(result.data.bystate, us)
-# join.result.data.bystate <- filter(join.result.data.bystate, state != "Hawaii" && state != "Alaska")
-# join.result.data.bystate$long <-  as.double(as.character(join.result.data.bystate$long))
-# join.result.data.bystate$lat <- as.double(as.character(join.result.data.bystate$lat))
-# 
-# 
-# ggplot()+
-#   #plot the US map (only the shape)
-#   geom_map(data = us, map = us,  aes(x = long, y = lat,map_id = region),fill = "gray")+
-#   geom_map(data = join.result.data.bystate, map = us, aes(x = long, y = lat, map_id = region, fill = genre), color = "black")+
-#   #Add point to represent the genre in each city and add n = the number of that kinds of events.
-#   geom_point(data = join.result.data, aes(x = long, y = lat, color = genre, size = n))
-#   
-#
-# 
-# 

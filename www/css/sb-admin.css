@@ -1,3 +1,10 @@
+h5{
+  font-size: 1.5em;
+}
+
+
+
+
 .bg-dark{
   background-color: #6d7993;
 }
@@ -14,7 +21,7 @@ a .navbar-brand {
 
 #music_btn ,#dashboard_btn, #sport_btn{
   width:17rem;
-  font-size: 2em;
+  font-size: 1.7em;
   color: white;
   background-color: #6D7993;
   border-color: #6D7993;
@@ -27,12 +34,7 @@ a .navbar-brand {
   background-color: #6D7993;
   border-color: #6D7993;
 }
-
-.ss ul{
-  display: inline !important;
-}
-
-.col-sm-12 div ul:first-of-type{
+#tabs,#music_sub,#sport_sub{
   display: none;
 }
 
@@ -57,9 +59,6 @@ body.sticky-footer .content-wrapper {
   min-height: calc(100vh - 56px - 56px);
 }
 
-body.fixed-nav {
-  padding-top: 56px;
-}
 
 .content-wrapper {
   min-height: calc(100vh - 56px);
