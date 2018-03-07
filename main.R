@@ -8,6 +8,7 @@ library(jsonlite)
 library(httr)
 library(stringi)
 library(stringr)
+library(plotly)
 
 #The Main function to do data wrangling
 
@@ -17,12 +18,11 @@ source("api.R")
 source("helper.R")
 #Source the helper method to get the city long, lat
 
-#The base URL for the APi
 base.url <- "https://app.ticketmaster.com/discovery/v2/"
+Sys.setenv('MAPBOX_TOKEN' = MAPBOX_TOKEN)
 
 #get the music event
 #The latest 1000 records (200 per GET, using For loop to do 5 times)
-
 #Init the final data frame get from the loop.
 final.result.data <- NULL
 
@@ -30,8 +30,9 @@ getMusicEvents <- function(){
   for(i in c(0:4)){
     page <- i #Set the page number 
     #----------------Receive the data from the API (In this example, # of events will receive is 200(max), in US, and Music related)
-    music.url <- paste0(base.url, "events.json?apikey=",api.key,'&size=200&countryCode=US&classificationName=Music&page=',page)
-    response <- GET(music.url)
+    sports.events.url <- paste0(base.url, "events.json?apikey=",api.key,
+                                '&size=200&countryCode=US&classificationName=Sports&page=1')
+    response <- GET(sports.events.url)
     body.data <- fromJSON(content(response,"text"),simplifyVector=TRUE,simplifyDataFrame=TRUE)
     result.data <- body.data$`_embedded`$events
     #-----------Start cleaning the data and only left, name, genere, location..etc.
@@ -41,17 +42,31 @@ getMusicEvents <- function(){
     state.name <- c()
     city.name <- c()
     genre.name <- c()
+    range.min <- c()
+    range.max <- c()
     for (j in c(1:200)){
       state.name <-c(state.name, result.data$`_embedded`$venues[[j]]$state$name)
       city.name <- c(city.name, result.data$`_embedded`$venues[[j]]$city$name)
       genre.name <- c(genre.name, result.data$classifications[[j]]$genre$name)
+      if (is.null(result.data$priceRanges[[j]]$min)) {
+        range.min <- c(range.min, NA)
+      } else {
+        range.min <- c(range.min, result.data$priceRanges[[j]]$min)
+      }
+    
+      if (is.null(result.data$priceRanges[[j]]$max)) {
+        range.max <- c(range.max, NA)
+      } else {
+        range.max <- c(range.max, result.data$priceRanges[[j]]$max)
+      }
+     
     }
     #Here we have three list of the state, city, genre name.
     #--------And we update the result data to have only essential columns
     result.data <- 
       result.data %>% 
       select(name, id) %>% 
-      mutate(city = city.name,genre = genre.name, state = state.name)
+      mutate(city = city.name,genre = genre.name, state = state.name, min = range.min, max = range.max)
     #-----------------Append the data frame with the fijnal.result.data
     #If the fitst, just replace it, afterwards, using rbind to append the data on the dataframe
     if(is.null(final.result.data)){
@@ -62,64 +77,91 @@ getMusicEvents <- function(){
   }
   return(final.result.data)
 }
-#---------------------Only call once and take a while
-final.result.data <- getMusicEvents()
+#Retrieve dataframe 
+final.result.data <- getMusicEvents() %>% 
+  filter(state == 'California' | 
+           state == 'Texas' |
+           state == 'Florida' |
+           state == 'New York' |
+           state == 'Pennsylvania')
 
-#final.result.data wrangliing
-#In this example, it group by the city, and genre, to figure out the max genre in each city
-result.data <- 
-  final.result.data %>% 
-  group_by(city, genre, state) %>% 
-  summarise(n = n()) %>% 
-  group_by(city,state) %>% 
-  filter(n == max(n))
-# city                       genre            state          n
-# 1 Minneapolis,Minnesota    Dance/Electronic Minnesota      1
-# 2 Agoura Hills,California  R&B              California     1
-# 3 Albany,New York          Rock             New York       2
-# 4 Albuquerque,New Mexico   Country          New Mexico     2
-# 5 Allen,Texas              R&B              Texas          1
-# 6 Alpharetta,Georgia       Rock             Georgia        3
-
-#Make an unique city list from the data frame
-cities <- c(as.character(unique(paste0(final.result.data$city,",",final.result.data$state))))
 #Get the Cities loc by using helper method
-cities.code <-  GetCityGeo(cities)
-# long      lat                 city
-# 1  -87.90647 43.03890  Milwaukee,Wisconsin
-# 2  -95.99277 36.15398       Tulsa,Oklahoma
-# 3 -115.17456 36.10237    New York,New York
-# 4  -75.11962 39.92595    Camden,New Jersey
-# 5 -118.35313 33.96168 Inglewood,California
-# 6  -73.59291 40.70038   Uniondale,New York
+#Add city column for future data frame join 
+cities.code <-  GetCityGeo(paste0(final.result.data$city,",",final.result.data$state)) %>% 
+  mutate(city = final.result.data$city)
 
-#Make the cify full name in "city,state" format
-result.data$city <- paste0(result.data$city,",",result.data$state)
+#Left join two data frame
+#Get rid of duplicates 
+join.result.data <- left_join(final.result.data, cities.code)
+join.result.data <- join.result.data[!duplicated(join.result.data), ]
 
-#left join two data frame
-join.result.data <- left_join(result.data, cities.code)
-# city                     genre            state          n   long   lat
-# 1 " Minneapolis,Minnesota" Dance/Electronic Minnesota      1 - 93.3  45.0
-# 2 Agoura Hills,California  R&B              California     1 -119    34.2
-# 3 Albany,New York          Rock             New York       2 - 73.8  42.7
-# 4 Albuquerque,New Mexico   Country          New Mexico     2 -107    35.1
-# 5 Allen,Texas              R&B              Texas          1 - 96.7  33.1
-# 6 Alpharetta,Georgia       Rock             Georgia        3 - 84.3  34.1
-
-#Remove Hawaii and alaska due to they are not in the mainland
-join.result.data <- filter(join.result.data, state != "Hawaii" && state != "Alaska")
-join.result.data$long <-  as.double(as.character(join.result.data$long))
-join.result.data$lat <- as.double(as.character(join.result.data$lat))
-
-
-us <- map_data("state")
-ggplot()+
-  #plot the US map (only the shape)
-  geom_map(data = us, map = us,  aes(x = long, y = lat,map_id = region),fill = "gray")+
-  #Add point to represent the genre in each city and add n = the number of that kinds of events.
-  geom_point(data = join.result.data, aes(x = long, y = lat, color = genre, size = n))
+#Group by state and find minimum and maximum price for each state 
+#Plot those prices in a dot plot
+GetDotPlot <- function() {
+  by.state.df <- final.result.data %>% filter(min != 'NA') %>% 
+    group_by(state) %>% 
+    summarise(min_price = min(min),
+              max_price = max(max))
+    
+  test <- plot_ly(by.state.df, x = ~min_price, y = ~state, name = "Minimum Price", type = 'scatter',
+               mode = "markers", marker = list(color = "pink")) %>%
+    add_trace(x = ~max_price, y = ~state, name = "Maximum Price", type = 'scatter',
+              mode = "markers", marker = list(color = "blue")) %>%
+    layout(
+      title = "Price Ranges for Tickets",
+      xaxis = list(title = "Price in Dollars ($)"),
+      margin = list(l = 100)
+    )
   
+  return(test)
+}
+
+# Map plot box 
+GetMapBox <- function() {
+  price.state.map <- join.result.data %>%
+    plot_mapbox(lat = ~lat, lon = ~long,
+                split = ~state, size=2,
+                mode = 'scattermapbox', hoverinfo= 'text',
+                text = ~paste('City: ' city)) %>%
+    layout(title = 'Meteorites by Class',
+           font = list(color='white'),
+           plot_bgcolor = '#191A1A', paper_bgcolor = '#191A1A',
+           mapbox = list(style = 'dark'),
+           legend = list(orientation = 'h',
+                         font = list(size = 8)),
+           margin = list(l = 25, r = 25,
+                         b = 25, t = 25,
+                         pad = 2))
+  return(price.state.map)
+}
+
+# table: top 5 Cheapest Tickets
+GetCheapestTickets <- function() {
+  cheapest.tickets <- final.result.data %>%
+    group_by(city, state, name, genre, min) %>% 
+    summarize(Min_Ticket_Price = min(min)) %>%
+    arrange(Min_Ticket_Price) %>% 
+    select(city, state, name, genre, min)
   
+  cheapest.tickets <- cheapest.tickets[c(1:5), ]
+  return(cheapest.tickets)
+}
+
+# table: top 5 Expensive Tickets 
+GetExpensiveTickets <- function() {
+  expensive.tickets <- final.result.data %>%
+    group_by(city, state, name, genre, max) %>% 
+    summarize(Max_Ticket_Price = max(max)) %>%
+    arrange(-Max_Ticket_Price) %>% 
+    filter(state == 'California' | 
+             state == 'Texas' |
+             state == 'Florida' |
+             state == 'New York' |
+             state == 'Pennsylvania') %>% 
+    select(city, state, name, genre, max)
   
+  expensive.tickets <- expensive.tickets[c(1:5), ]
+  return(expensive.tickets)
+}  
 
 

@@ -4,34 +4,30 @@
 
 
 a .navbar-brand {
-  font-size: 30px;
+  font-size: 2em;
 }
 
 
 #dashboard_btn{
-  margin-top: 30px;
-  color: white;
-  background-color: #6D7993;
-  border-color: #6D7993;
-  font-size: 30px;
+  margin-top: 2em;
 }
 
-#music_btn{
-  font-size: 30px;
+#music_btn ,#dashboard_btn, #sport_btn{
+  width:17rem;
+  font-size: 1.7em;
   color: white;
   background-color: #6D7993;
   border-color: #6D7993;
 }
 
-#sport_btn{
-  color: white;
+#music_pop_btn, #music_pri_btn, #sport_pop_btn, #sport_pri_btn{
+  font-size: 1.2em;
+  margin-left:4em;
+  color: #e2e4e9;
   background-color: #6D7993;
   border-color: #6D7993;
-  font-size: 30px;
 }
-
-
-.tabbable ul{
+#tabs,#music_sub,#sport_sub{
   display: none;
 }
 
@@ -372,11 +368,11 @@ body.sidenav-toggled .navbar-sidenav-tooltip.show {
 }
 
 #mainNav.navbar-dark .navbar-collapse .navbar-sidenav .nav-link-collapse:after {
-  color: #868e96;
+  color: white;
 }
 
 #mainNav.navbar-dark .navbar-collapse .navbar-sidenav > .nav-item > .nav-link {
-  color: #868e96;
+  color: white;
 }
 
 #mainNav.navbar-dark .navbar-collapse .navbar-sidenav > .nav-item > .nav-link:hover {
