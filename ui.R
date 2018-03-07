@@ -1,7 +1,5 @@
 library(shiny)
-source("sportspopmain.R")
 library(plotly)
-source("music_pop.R")
 library(shinyjs)
 
 ui <- htmlTemplate(

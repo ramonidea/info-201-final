@@ -1,6 +1,5 @@
 library(shiny)
-source("sportspopmain.R")
-source("music_pop.R")
+
 library(shinyjs)
 library(plotly)
 source("api.R")
@@ -51,7 +50,6 @@ server <- function(input, output, session) {
   
   
   
-}
 
   output$stateCountMap <- renderPlotly({
     state.count.map

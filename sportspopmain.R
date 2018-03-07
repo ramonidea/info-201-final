@@ -71,8 +71,7 @@ sports.pop.data <- sports.result.data %>% group_by(state, city) %>%
 map.data <- GetCityGeo(paste0(sports.result.data$city, ",", 
                               sports.result.data$state)) %>% 
   mutate(city = sports.result.data$city)
-sports.data.map <- left_join(sports.pop.data, map.data)
-sports.data.map <- sports.data.map[!duplicated(sports.data.map), ]
+sports.data.map <- left_join(sports.pop.data, unique(map.data))
 
 
 Sys.setenv('MAPBOX_TOKEN' = MAPBOX_TOKEN)
