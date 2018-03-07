@@ -4,8 +4,8 @@ library(plotly)
 source("api.R")
 library(stringr)
 
-detach("package:plyr", unload=TRUE) 
-library(dplyr) 
+detach("package:plyr", unload=TRUE)
+library(dplyr)
 
 
 
@@ -59,23 +59,23 @@ server <- function(input, output, session) {
   output$topstate <- renderTable({
     top.cities <-
       cities.music.count <-
-      result.country.music %>% 
-      group_by(code,city,state) %>% 
-      filter(!state %in% c("Alaska","Hawaii")) %>% 
-      summarise(Event_Number = n()) %>% 
-      na.omit() %>% 
-      arrange(-Event_Number) 
+      result.country.music %>%
+      group_by(code,city,state) %>%
+      filter(!state %in% c("Alaska","Hawaii")) %>%
+      summarise(Event_Number = n()) %>%
+      na.omit() %>%
+      arrange(-Event_Number)
     top.cities <- top.cities[c(1:5),]
     return(top.cities)
   })
 
   output$topcity <- renderTable({
     top.states <-
-      result.country.music %>% 
+      result.country.music %>%
       group_by(code,state) %>%
       summarise(Event_Number = n()) %>%
       arrange(-Event_Number)
-    
+
     top.states <- top.states[c(1:5),]
     return (top.states)
   })
@@ -85,14 +85,14 @@ server <- function(input, output, session) {
     us <- map_data("state")
     us$state = str_to_title(us$region)
     print(head(result.country.music))
-    genre.state <- 
-      result.country.music %>% 
-      filter(genre == genre.choice) %>% 
-      group_by(state) %>% 
-      summarise(Event_Number = n()) %>% 
-      arrange(Event_Number) %>% 
+    genre.state <-
+      result.country.music %>%
+      filter(genre == genre.choice) %>%
+      group_by(state) %>%
+      summarise(Event_Number = n()) %>%
+      arrange(Event_Number) %>%
       left_join(us)
-    
+
     gg <- ggplot()+
       geom_map(data = us, map = us, aes(x = long, y = lat, map_id = region),
                color = "dark gray",fill = "black",size = 0.05)+
@@ -150,10 +150,21 @@ server <- function(input, output, session) {
   })
 
 
+  output$bargraph <- renderPlotly({
+    return(GetDotPlot())
+  })
 
+  output$cheapesttickets <- renderTable({
+    return(GetCheapestTickets())
+  })
 
+  output$expensivetickets <- renderTable({
+    return(GetExpensiveTickets())
+  })
 
-
+  output$basketballmap <- renderPlotly({
+    return(getSportMap(input$sport))
+  })
 
 
 }

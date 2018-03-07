@@ -109,7 +109,30 @@ ui <- htmlTemplate(
                  tabPanel(
                    "sport_pri",
                    #-----Sport Price------
-                   tags$h3("Sport Price Range Page")
+                   tags$h1("Sport Price Range Page"),
+                   tags$br(),
+                   tags$p("The two tables below focuses on the top 5 populated states in the US which includes
+                    California, Texas, Florida, New York, and Pennsylvania. The first table represents the
+                    the top 5 cheapest tickets among those states whereas, the second one focuses on the most
+                    expensive. For any individual in these areas who loves to watch sports and, is not willing to spend a lot on
+                    a ticket, this would be a useful dataset. On the otherhand, the second table represents
+                    the top 5 expensive tickets. Any sports fanatics around these areas who is willing to
+                    splurge for front row seat tickets would find this dataset helpful."),
+                   tableOutput('cheapesttickets'),
+                   tableOutput('expensivetickets'),
+                   tags$br(),
+                   tags$p("The bar graph below represents the price ranges for each of the top 5 populated states.
+                          The states are color coded. Also, it is interactive as it shows the minimum, mean, and maximum
+                          price for tickets when you hover over each of the bars."),
+                   plotlyOutput('bargraph'),
+                   tags$br("The input filter allows the user to choose what sport they want to see on the US map.
+                   More specifically the map shows what state has events associated to the sport selected. The
+                   darker the color the state is, the more expensive the ticket is."),
+                   selectInput("sport", choices = getDropDownValues(), label = "Sport Type", selected = "Basketball"),
+                   plotlyOutput('basketballmap')
+
+
+
                    #-----------End-------------
                  )
                ))

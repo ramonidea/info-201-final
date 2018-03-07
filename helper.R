@@ -59,5 +59,3 @@ GetCityGeo <- function(names){
   }
   return(data.frame(long = long, lat = lat, city = name))
 }
-
-
