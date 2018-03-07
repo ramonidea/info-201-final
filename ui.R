@@ -72,7 +72,8 @@ ui <- htmlTemplate(
                          It allows people to arrange their events to the place which have more potential for the genre of the music.
                          You may select the type of genres to view the map."),
                   selectInput("genre.pop",choices = getGenres(),label = "Music Genre", selected = "Pop"),
-                  plotOutput("genre.state",width = 600)
+                  plotOutput("genre.state",width = 600),
+                  tags$p("This map is inteded for event planners to view which state(s) may have higher potential interests in certain genres.")
 
 
                    #------End-------
