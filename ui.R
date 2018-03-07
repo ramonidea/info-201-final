@@ -32,12 +32,13 @@ ui <- htmlTemplate(
                https://developer.ticketmaster.com/products-and-docs/apis/getting-started/ . The data for this set
                comes from data collected by Ticketmaster, Universe, FrontGate and Ticketmaster Resale.
                The data set would include all information that is available directly on the Ticketmaster
-               website. From there, we can refine our search results by setting where the source is from the
-               companies listed above. We can define query parameters to find specific listing information for a
-               certain event of an artist, sports team, location, etc. It is not too hard to understand the data set.
-               You would need to know how to request from the api but for specific events, you would only
-               need to know culturally prevalent topics and themes as it is all events that are listed on
-               Ticketmaster."),
+               website. For our project, we chose to focus on sports and music for our subjects. From there, we found 
+                we categorized them under popularity and price trends. Our goal was to understand the trends of popularity of 
+                cities and the corresponding prices for various events. This could be used by event coordinators planning 
+                future events and price them accordingly. Understanding the supply and demand can allow for maximum profit 
+                while keeping it attractive for fans. Sports fans can also see where there are the most amount of sports events 
+                so if they are interested in going to a city to see their favorite team, they can plan accordingly and find the 
+              price range and budget."),
         tags$br(),
         HTML('<script src="js/main-widget.js"></script>')
 
