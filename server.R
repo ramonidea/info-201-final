@@ -1,10 +1,8 @@
 library(shiny)
-source("main.R")
+source("mkmain.R")
 library(shinyjs)
 library(plotly)
 source("api.R")
-
-
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output, session) {
@@ -36,36 +34,30 @@ server <- function(input, output, session) {
   })
   #=============END======================
 
-
-  
   output$intro <- renderText({
     return('Here is the INTRO Part')
   })
   
-  output$stateCountMap <- renderPlotly({
-    getCountryCountMap()
-    })
-  
-  output$topstate <- renderTable({
-    return(getTopCities())
+  output$music_min_price <- renderTable({
+    return(top.min)
   })
   
-  output$topcity <- renderTable({
-    return (getTopStates())
+  output$music_max_price <- renderTable({
+    return(top.max)
+  })
+  output$seattle <- renderPlotly({
+    return(seattle.graph)
+  })
+  output$la<- renderPlotly({
+    return(la.graph)
+  })
+  output$newyork <- renderPlotly({
+    return(ny.graph)
   })
   
-  output$genre.state <- renderPlot({
-    return(getGenreMap(input$genre.pop))
-  })
   
-  
-output$musicprice <- renderPlotly({
-  return(musicpri.visualization(sea.la.ny))
-  
-})
 
-    
- 
+  
   
   output$mapEx <- renderPlotly({
     #Map example

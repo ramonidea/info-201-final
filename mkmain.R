@@ -56,7 +56,8 @@ sea.result.data <- sea.result.data %>%
   select(name) %>% 
   mutate(Genre = sea.genre, Minimum = sea.mins[1:200], Maximum = sea.max[1:200], City = sea.city)
 
-sea.result.data <- sea.result.data[!duplicated(sea.result.data$name),]
+sea.result.data <- sea.result.data[!duplicated(sea.result.data$name),] %>% 
+  mutate(hover = paste0("Event: ", name, "<br>", "Min: ", Minimum, "<br>", "Max: ", Maximum))
 
 # Creates a data frame which includes event names, genre, mins and max 
 #of music events in LA
@@ -74,7 +75,8 @@ la.city <- c(la.city, la.body.data$`_embedded`$events$`_embedded`$venues[[j]]$ci
 la.result.data <- la.result.data %>% 
   select(name) %>%
   mutate(Genre = la.genre, Minimum = la.mins[1:200], Maximum = la.max[1:200], City = la.city)
-  la.result.data <- la.result.data[!duplicated(la.result.data$name), ]
+  la.result.data <- la.result.data[!duplicated(la.result.data$name), ] %>% 
+    mutate(hover = paste0("Event: ", name, "<br>", "Min: ", Minimum, "<br>", "Max: ", Maximum))
 
 
 #Gets music events of New York 
@@ -92,61 +94,50 @@ ny.result.data <- ny.result.data %>%
   select(name) %>% 
   mutate(Genre = ny.genre, Minimum = ny.mins[1:200], Maximum = ny.max[1:200], City = ny.city)
 
-ny.result.data <- ny.result.data[!duplicated(ny.result.data$name),]
+ny.result.data <- ny.result.data[!duplicated(ny.result.data$name),] %>% 
+  mutate(hover = paste0("Event: ", name, "<br>", "Min: ", Minimum, "<br>", "Max: ", Maximum))
 
-#Joined the three dataframe together and get rid of na values 
-sea.la <- merge(sea.result.data, la.result.data, all = T)
-sea.la.ny <- merge(sea.la , ny.result.data, all = T) %>% na.omit()
 
-#Get genres for selected price range and city 
-GetGenres <- function(data) {
-  genres <- data %>% select(Genre) 
-  genres <- genres[!duplicated(genres),]
-  return(genres)
-}
-
-#top 5 maximum events 
-
+#top 5 minimum events 
 top.min <- sea.la.ny %>% 
   arrange(Minimum) %>%
   select(name, Minimum, City) %>%
   head()
+most.cheap <- top.min[1,]
 
+#top 5 maxmimum events
 top.max <- sea.la.ny %>% 
   arrange(-Maximum) %>%
   select(name, Maximum, City) %>%
   head()
+most.expensive <- top.max[1,]
 
-# Line graph of price ranges of three cities
-musicpri.visualization <- function(inputdata){
-  p <- ggplot(data=inputdata,
-       aes(x=Maximum, y=Minimum, colour=City)) +
-      geom_line() +
-      facet_wrap('City') +
-      scale_color_manual(values=c("#CC6666", "#9999CC", "#66CC99")) +
-      labs(title="Price Range of Music Events in U.S.", 
-      subtitle="Price across three cities in USD")
-  p <- 
-  return(p)
-}
+# Scatterplot which shows music events in LA. shows the names, min, max, and genre 
+la.graph <- plot_ly(data = la.result.data, x = ~Maximum, y=~Minimum,
+                    type = 'scatter', text = ~hover, hoverinfo = 'text', split = ~Genre) %>%
+  layout(title = "Price of Music Events in Los Angeles")
 
-p <- ggplot(data=sea.la.ny,
-            aes(x=Maximum, y=Minimum, colour=City)) +
-  geom_line() +
-  facet_wrap('City') + #take them out? 
-  scale_color_manual(values=c("#CC6666", "#9999CC", "#66CC99")) +
-  labs(title="Price Range of Music Events in U.S.", 
-       subtitle="Price across three cities (in USD)") 
+# Scatterplot which shows music events in Seattle. shows the names, min, max, and genre 
+seattle.graph <- plot_ly(data = sea.result.data, x = ~Maximum, y=~Minimum,
+                         type = 'scatter', text = ~hover, hoverinfo = 'text',split = ~Genre) %>%
+  layout(title = "Price of Music Events in Seattle")
+
+# Scatterplot which shows music events in NY. shows the names, min, max, and genre 
+ny.graph <- plot_ly(data = ny.result.data, x = ~Maximum, y=~Minimum,
+                    type = 'scatter', text = ~hover, hoverinfo = 'text',split = ~Genre) %>%
+  layout(title = "Price of Music Events in New York")
+  
+  
 
 
-#TEST
-p <- plot_ly(data = sea.la.ny, x = Maximum, y = Minimum)
 
-             hoverinfo = text,
-             text = ~paste('City: ', City,
-                           '</br>Genre: ', Genre,
-                           '</br>min: ', Maximum,
-                           '</br>max:', Minimum))
+  
+
+
+
+
+
+
 
 
 
