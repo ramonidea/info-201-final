@@ -1,5 +1,6 @@
 library(shiny)
 library(plotly)
+source("main.R")
 
 ui <- htmlTemplate(
   "./www/index.html",

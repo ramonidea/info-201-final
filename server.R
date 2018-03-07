@@ -3,8 +3,7 @@ library(shinyjs)
 library(plotly)
 source("api.R")
 library(stringr)
-
-detach("package:plyr", unload=TRUE)
+#detach("package:plyr", unload=TRUE)
 library(dplyr)
 
 
@@ -100,10 +99,6 @@ server <- function(input, output, session) {
     return(gg)
 })
 
-  output$intro <- renderText({
-    return('Here is the INTRO Part')
-  })
-
   output$music_min_price <- renderTable({
     return(top.min)
   })
@@ -151,20 +146,86 @@ server <- function(input, output, session) {
 
 
   output$bargraph <- renderPlotly({
-    return(GetDotPlot())
+    by.state.df <- final.result.data %>% 
+      na.omit()%>% 
+      group_by(state) %>% 
+      summarise(min_price = min(min),
+                max_price = max(max)) %>% 
+      gather("type","Number",2:3)
+    test <- 
+      by.state.df %>% 
+      plot_ly(x = ~Number, color = ~state, 
+              mode = "markers", marker = list(color = "pink"), type = "box") %>% 
+      layout(
+        title = "Price Ranges for Tickets",
+        xaxis = list(title = "Price in Dollars ($)"),
+        margin = list(l = 100)
+      )
+    return(test)
   })
 
   output$cheapesttickets <- renderTable({
-    return(GetCheapestTickets())
+    cheapest.tickets <- final.result.data %>%
+      group_by(city, state, name, genre, min) %>% 
+      summarize(Min_Ticket_Price = min(min)) %>%
+      arrange(Min_Ticket_Price) %>% 
+      select(city, state, name, genre, min)
+    
+    cheapest.tickets <- cheapest.tickets[c(1:5), ]
+    return(cheapest.tickets)
   })
 
   output$expensivetickets <- renderTable({
-    return(GetExpensiveTickets())
+    expensive.tickets <- final.result.data %>%
+      group_by(city, state, name, genre, max) %>% 
+      summarize(Max_Ticket_Price = max(max)) %>%
+      arrange(-Max_Ticket_Price) %>% 
+      filter(state == 'California' | 
+               state == 'Texas' |
+               state == 'Florida' |
+               state == 'New York' |
+               state == 'Pennsylvania') %>% 
+      select(city, state, name, genre, max)
+    
+    expensive.tickets <- expensive.tickets[c(1:5), ]
+    return(expensive.tickets)
   })
 
   output$basketballmap <- renderPlotly({
-    return(getSportMap(input$sport))
+    sport <- input$sport
+    
+    us <- map_data("state")
+    us$state <- stringr::str_to_title(us$region)
+    sport.map.data <- get.data %>% 
+      filter(genre == sport) %>%
+      group_by(state) %>% 
+      summarise(max = max(max)) %>% 
+      mutate(hover = paste0(state,', Sport:',sport,'<br>',"Max Price:", max)) %>% 
+      na.omit() %>%
+      mutate(max =cut(max,30)) %>% 
+      left_join(us)
+    
+    gg <-sport.map.data %>% 
+      group_by(group) %>% 
+      plot_mapbox(x = ~long, y = ~lat, color = ~max, colors = c('#ffeda0',"#f03b20"),
+                  text = ~hover, hoverinfo = 'text', showlegend = FALSE) %>% 
+      add_polygons(line = list(width = 0.4)) %>% 
+      add_polygons(fillcolor = 'transparent', line = list(color = 'black',width = 0.5)) %>% 
+      layout(title = ~paste0(sport,' by Class'),
+             font = list(color='white'),
+             plot_bgcolor = '#191A1A', paper_bgcolor = '#191A1A',
+             mapbox = list(style = 'dark',
+                           center = list(lat  =39.8283, lon = -98.5795),
+                           zoom = 3),
+             legend = list(orientation = 'h',
+                           font = list(size = 8)),
+             margin = list(l = 25, r = 25,
+                           b = 25, t = 25,
+                           pad = 2))
+    
+    return (gg)
   })
-
+  
+  
 
 }
