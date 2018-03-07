@@ -1,7 +1,7 @@
 library(shiny)
 library(shinyjs)
 library(plotly)
-source("main.R")
+source("music_pop.R")
 
 ui <- htmlTemplate(
   "./www/index.html",
