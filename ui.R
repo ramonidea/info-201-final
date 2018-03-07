@@ -48,7 +48,7 @@ ui <- htmlTemplate(
                    tags$h2("Data Report - Music Events (Popularity)"),
                    tags$br(),
                    tags$h4("The Music Events across the country"),
-                   tags$p("In the map shown below, the color filled in each states indicates the number of the music related events in each state. 
+                   tags$p("In the map shown below, the color filled in each states indicates the number of the music related events in each state.
                           It generally shows how music events distributed in the U.S. and the potential demands among those states."),
                    plotlyOutput("stateCountMap"),
                    tags$p("In the map, the darker the color is, the more events happening in that state.
@@ -69,16 +69,26 @@ ui <- htmlTemplate(
                          You may select the type of genres to view the map."),
                   selectInput("genre.pop",choices = getGenres(),label = "Music Genre", selected = "Pop"),
                   plotOutput("genre.state",width = 600)
-                   
-                  
+
+
                    #------End-------
                  ),
                  tabPanel(
                    "mus_pri",
                    #------Music Price Range---
-                   tags$h3("Music price range Page")
+                   tags$h3("Music Event Price Range Page"),
+                   tags$h4("Data Report:"),
+                   tags$body(paste0("This is a data report for music events in three cities: Seattle, Los Angeles, and New York.
+                                    The most cheap music event is ",most.cheap$name, " in ", most.cheap$City,
+                                    "and the most expensive music event is ", most.expensive$name, " in ", most.expensive$City),
+                   tableOutput('music_min_price'),
+                   tableOutput('music_max_price'),
+                   plotlyOutput('seattle'),
+                   plotlyOutput('la'),
+                   plotlyOutput('newyork')
+
                    #------end---------
-                 )
+                   )
                )),
       tabPanel('sport',
                tabsetPanel(
