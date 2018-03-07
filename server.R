@@ -1,10 +1,11 @@
 library(shiny)
 source("sportspopmain.R")
+source("music_pop.R")
 library(shinyjs)
 library(plotly)
 source("api.R")
 
-Sys.setenv('MAPBOX_TOKEN' = MAPBOX_TOKEN)
+
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output, session) {
@@ -35,12 +36,7 @@ server <- function(input, output, session) {
     updateTabsetPanel(session,"tabs", selected = "sport")
   })
   #=============END======================
-  
-  
-  output$intro <- renderText({
-    return('Here is the INTRO Part')
-  })
-  
+
   output$sports_pop_map <- renderPlotly({
     return(sports.pop.map)
   })
@@ -56,4 +52,28 @@ server <- function(input, output, session) {
   
   
 }
-shinyServer(server)
+
+  output$stateCountMap <- renderPlotly({
+    state.count.map
+    })
+  
+  output$topstate <- renderTable({
+    return(getTopCities())
+  })
+  
+  output$topcity <- renderTable({
+    return (getTopStates())
+  })
+  
+  output$genre.state <- renderPlot({
+    return(getGenreMap(input$genre.pop))
+  })
+  
+  
+  
+
+    
+ 
+ 
+  
+}
