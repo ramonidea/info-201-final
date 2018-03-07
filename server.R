@@ -49,5 +49,9 @@ server <- function(input, output, session) {
     return(sports.pop.pie)
   })
   
+  output$sports_pop_bar <- renderPlotly({
+    return(sports.pop.graph)
+  })
+  
 }
 shinyServer(server)
