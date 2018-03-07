@@ -81,16 +81,31 @@ ui <- htmlTemplate(
                    "mus_pri",
                    #------Music Price Range---
                    tags$h3("Music Event Price Range Page"),
+                   tags$br(),
                    tags$h4("Data Report:"),
                    tags$body(paste0("This is a data report for music events in three cities: Seattle, Los Angeles, and New York.
+                                    The data shows minimum and maxmimum prices of music events among those three cities and compare prices.
                                     The most cheap music event is ",most.cheap$name, " in ", most.cheap$City,
                                     "and the most expensive music event is ", most.expensive$name, " in ", most.expensive$City)),
+                   tags$br(),
                    tableOutput('music_min_price'),
+                   tags$br(),
                    tableOutput('music_max_price'),
+                   tags$br(),
+                   tags$h4("Music events in Seattle"),
                    plotlyOutput('seattle'),
+                   tags$body("This graph illustrates the music event prices in Seattle with minimum and maximum prices.
+                            Each dot represents each music events. Event's name and genre are included in the data.
+                             As illustrated in the graph, Seattle has second most expensive music events among three cities."),
+                   tags$br(),
                    plotlyOutput('la'),
-                   plotlyOutput('newyork')
-
+                   tags$body("This graph illustrates the price ranges of music event prices in Los Angeles.
+                            Each dot represents each music events. Event's name and genre are included in the data."),
+                   tags$br(),
+                   plotlyOutput('newyork'),
+                   tags$body("This graph illustrates the price ranges of music event prices in New York.
+                             Each dot represents each music events. Event's name and genre are included in the data.
+                             As illustrate by the graph, New York has the most expensive events of all three cities.")
                    #------end---------
                    )
                )),
