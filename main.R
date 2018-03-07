@@ -26,7 +26,7 @@ Sys.setenv('MAPBOX_TOKEN' = MAPBOX_TOKEN)
 #Init the final data frame get from the loop.
 final.result.data <- NULL
 
-getMusicEvents <- function(){
+getSportEvents <- function(){
   for(i in c(0:4)){
     page <- i #Set the page number 
     #----------------Receive the data from the API (In this example, # of events will receive is 200(max), in US, and Music related)
@@ -77,13 +77,16 @@ getMusicEvents <- function(){
   }
   return(final.result.data)
 }
+
+get.data <- getSportEvents() 
+
 #Retrieve dataframe 
-final.result.data <- getMusicEvents() %>% 
+final.result.data <- get.data%>% 
   filter(state == 'California' | 
            state == 'Texas' |
            state == 'Florida' |
            state == 'New York' |
-           state == 'Pennsylvania')
+           state == 'Pennsylvania') 
 
 #Get the Cities loc by using helper method
 #Add city column for future data frame join 
@@ -98,15 +101,19 @@ join.result.data <- join.result.data[!duplicated(join.result.data), ]
 #Group by state and find minimum and maximum price for each state 
 #Plot those prices in a dot plot
 GetDotPlot <- function() {
-  by.state.df <- final.result.data %>% filter(min != 'NA') %>% 
+  by.state.df <- final.result.data %>% 
+    na.omit()%>% 
     group_by(state) %>% 
     summarise(min_price = min(min),
-              max_price = max(max))
-    
-  test <- plot_ly(by.state.df, x = ~min_price, y = ~state, name = "Minimum Price", type = 'scatter',
-               mode = "markers", marker = list(color = "pink")) %>%
-    add_trace(x = ~max_price, y = ~state, name = "Maximum Price", type = 'scatter',
-              mode = "markers", marker = list(color = "blue")) %>%
+              max_price = max(max)) %>% 
+    gather("type","Number",2:3)
+  
+  
+
+  test <- 
+  by.state.df %>% 
+    plot_ly(x = ~Number, color = ~state, 
+               mode = "markers", marker = list(color = "pink"), type = "box") %>% 
     layout(
       title = "Price Ranges for Tickets",
       xaxis = list(title = "Price in Dollars ($)"),
@@ -116,24 +123,78 @@ GetDotPlot <- function() {
   return(test)
 }
 
-# Map plot box 
-GetMapBox <- function() {
-  price.state.map <- join.result.data %>%
-    plot_mapbox(lat = ~lat, lon = ~long,
-                split = ~state, size=2,
-                mode = 'scattermapbox', hoverinfo= 'text',
-                text = ~paste('City: ' city)) %>%
-    layout(title = 'Meteorites by Class',
-           font = list(color='white'),
-           plot_bgcolor = '#191A1A', paper_bgcolor = '#191A1A',
-           mapbox = list(style = 'dark'),
-           legend = list(orientation = 'h',
-                         font = list(size = 8)),
-           margin = list(l = 25, r = 25,
-                         b = 25, t = 25,
-                         pad = 2))
-  return(price.state.map)
+getDropDownValues <- function() {
+  return(unique(get.data$genre))
 }
+
+
+getSportMap <-function(sport){
+  us <- map_data("state")
+  us$state <- stringr::str_to_title(us$region)
+  sport.map.data <- get.data %>% 
+    filter(genre == sport) %>%
+    group_by(state) %>% 
+    summarise(max = max(max)) %>% 
+    mutate(hover = paste0(state,', Sport:',sport,'<br>',"Max Price:", max)) %>% 
+    na.omit() %>%
+    mutate(max =cut(max,30)) %>% 
+    left_join(us)
+  
+  sport.map.data %>% 
+    group_by(group) %>% 
+    plot_mapbox(x = ~long, y = ~lat, color = ~max, colors = c('#ffeda0',"#f03b20"),
+                text = ~hover, hoverinfo = 'text', showlegend = FALSE) %>% 
+    add_polygons(line = list(width = 0.4)) %>% 
+    add_polygons(fillcolor = 'transparent', line = list(color = 'black',width = 0.5)) %>% 
+    layout(title = ~paste0(sport,' by Class'),
+                      font = list(color='white'),
+                      plot_bgcolor = '#191A1A', paper_bgcolor = '#191A1A',
+                      mapbox = list(style = 'dark',
+                                    center = list(lat  =39.8283, lon = -98.5795),
+                                    zoom = 3),
+                      legend = list(orientation = 'h',
+                                    font = list(size = 8)),
+                      margin = list(l = 25, r = 25,
+                                    b = 25, t = 25,
+                                    pad = 2))
+  
+    
+    
+    
+}
+
+# 
+# # Map plot box 
+# GetMapBox <- function() {
+#   box.data <-
+#     final.result.data %>% 
+#     group_by(state, city) %>% 
+#     na.omit() %>% 
+#     summarise(min = min(min),
+#               max = max(max)) %>% 
+#     left_join(unique(cities.code))
+#   
+#   
+#  # price.state.map <- 
+#   box.data %>%
+#     plot_mapbox(lat = ~lat, lon = ~long,
+#                 split = ~state, size=2,
+#                 mode = 'scattermapbox', hoverinfo= 'text',
+#                 text = ~paste0('City: ' ,city))
+#     layout(title = 'Meteorites by Class',
+#            font = list(color='white'),
+#            plot_bgcolor = '#191A1A', paper_bgcolor = '#191A1A',
+#            mapbox = list(style = 'dark',
+#                          center = list(lat  =39.8283, lon = -98.5795),
+#                          zoom = 3),
+#            legend = list(orientation = 'h',
+#                          font = list(size = 8)),
+#            margin = list(l = 25, r = 25,
+#                          b = 25, t = 25,
+#                          pad = 2))
+#   
+#   return(price.state.map)
+# }
 
 # table: top 5 Cheapest Tickets
 GetCheapestTickets <- function() {

@@ -91,12 +91,8 @@ server <- function(input, output, session) {
   })
 #################################################################
   
-  output$dotplot <- renderPlotly({
+  output$bargraph <- renderPlotly({
     return(GetDotPlot())
-  })
-  
-  output$mapbox <- renderPlotly({
-    return(GetMapBox())
   })
   
   output$cheapesttickets <- renderTable({
@@ -107,6 +103,9 @@ server <- function(input, output, session) {
     return(GetExpensiveTickets())
   })
   
+  output$basketballmap <- renderPlotly({
+    return(getSportMap(input$sport))
+  })
 
   
 } 
