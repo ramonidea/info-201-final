@@ -1,6 +1,10 @@
 library(shiny)
 library(plotly)
 source("main.R")
+source("music_pop.R")
+source("mkmain.R")
+source("sportspopmain.R")
+source("main.R")
 
 ui <- htmlTemplate(
   "./www/index.html",

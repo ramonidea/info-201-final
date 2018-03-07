@@ -1,4 +1,4 @@
-library(dplyr)
+
 library(tidyr)
 library(ggplot2)
 library(ggmap)
@@ -9,6 +9,7 @@ library(httr)
 library(stringi)
 library(stringr)
 library(plotly)
+library(dplyr)
 
 
 
@@ -91,7 +92,7 @@ us$state <- stringr::str_to_title(us$region)
 states.music.count <- 
   result.country.music %>% 
   group_by(code,state) %>% 
-  summarise(n = n()) %>% 
+  dplyr::summarise(n = n()) %>% 
   arrange(n) %>% 
   mutate(hover = paste(state, '<br>',"Number of Events:", n)) %>% 
   full_join(us, by="state") %>% 
@@ -106,7 +107,7 @@ cities.music.count <-
   result.country.music %>% 
   group_by(code,city,state) %>% 
   filter(!state %in% c("Alaska","Hawaii")) %>% 
-  summarise(n = n()) %>% 
+  dplyr::summarise(n = n()) %>% 
   ungroup(city) %>% 
   mutate(city = paste0(city,',',state)) %>% 
   mutate(hover = paste(city, '<br>',"Number of Events:", n)) %>% 

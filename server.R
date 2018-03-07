@@ -3,9 +3,8 @@ library(shinyjs)
 library(plotly)
 source("api.R")
 library(stringr)
-#detach("package:plyr", unload=TRUE)
 library(dplyr)
-
+options(shiny.sanitize.errors = TRUE)
 
 
 # Define server logic required to draw a histogram ----
@@ -61,7 +60,7 @@ server <- function(input, output, session) {
       result.country.music %>%
       group_by(code,city,state) %>%
       filter(!state %in% c("Alaska","Hawaii")) %>%
-      summarise(Event_Number = n()) %>%
+      dplyr::summarise(Event_Number = n()) %>%
       na.omit() %>%
       arrange(-Event_Number)
     top.cities <- top.cities[c(1:5),]
@@ -72,7 +71,7 @@ server <- function(input, output, session) {
     top.states <-
       result.country.music %>%
       group_by(code,state) %>%
-      summarise(Event_Number = n()) %>%
+      dplyr::summarise(Event_Number = n()) %>%
       arrange(-Event_Number)
 
     top.states <- top.states[c(1:5),]
@@ -83,12 +82,11 @@ server <- function(input, output, session) {
     genre.choice <- input$genre.pop
     us <- map_data("state")
     us$state = str_to_title(us$region)
-    print(head(result.country.music))
     genre.state <-
       result.country.music %>%
       filter(genre == genre.choice) %>%
       group_by(state) %>%
-      summarise(Event_Number = n()) %>%
+      dplyr::summarise(Event_Number = n()) %>%
       arrange(Event_Number) %>%
       left_join(us)
 
@@ -149,7 +147,7 @@ server <- function(input, output, session) {
     by.state.df <- final.result.data %>% 
       na.omit()%>% 
       group_by(state) %>% 
-      summarise(min_price = min(min),
+      dplyr::summarise(min_price = min(min),
                 max_price = max(max)) %>% 
       gather("type","Number",2:3)
     test <- 
@@ -199,7 +197,7 @@ server <- function(input, output, session) {
     sport.map.data <- get.data %>% 
       filter(genre == sport) %>%
       group_by(state) %>% 
-      summarise(max = max(max)) %>% 
+      dplyr::summarise(max = max(max)) %>% 
       mutate(hover = paste0(state,', Sport:',sport,'<br>',"Max Price:", max)) %>% 
       na.omit() %>%
       mutate(max =cut(max,30)) %>% 

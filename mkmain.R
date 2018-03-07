@@ -8,7 +8,6 @@ library(jsonlite)
 library(httr)
 library(stringi)
 library(stringr)
-library(plyr)
 library(plotly)
 
 
@@ -37,7 +36,7 @@ sea.body.data <-
     simplifyVector = TRUE,
     simplifyDataFrame = TRUE
   )
-sea.result.data <- flatten(sea.body.data$`_embedded`$events)
+sea.result.data <- sea.body.data$`_embedded`$events
 
 
 la.music.url <-

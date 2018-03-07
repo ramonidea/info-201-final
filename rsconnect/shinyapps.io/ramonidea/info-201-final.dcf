@@ -5,8 +5,8 @@ account: ramonidea
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 289477
-bundleId: 1256202
+bundleId: 1256580
 url: https://ramonidea.shinyapps.io/info-201-final/
-when: 1520418146.19717
+when: 1520439358.27221
 asMultiple: FALSE
 asStatic: FALSE
