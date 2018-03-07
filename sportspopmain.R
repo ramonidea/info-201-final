@@ -30,34 +30,42 @@ source("helper.R")
 
 #The base URL for the APi
 base.url <- "https://app.ticketmaster.com/discovery/v2/"
-sports.events.url <- paste0(base.url, "events.json?apikey=",api.key,
-                            '&size=200&countryCode=US&classificationName=Sports&page=1')
-sports.events.response <- GET(sports.events.url)
-sports.body.data <- fromJSON(content(sports.events.response,"text"))
-sports.result.data <- flatten(sports.body.data$`_embedded`$events)
-sports.result.data <- select(sports.result.data, name, url, 
-                             dates.start.localDate, dates.start.localTime, 
-                             dates.timezone, promoter.name, priceRanges)
-
-# add state and city to event data
-state.name <- c()
-city.name <- c()
-for (j in c(1:200)){
-  state.name <-c(state.name, 
-                 sports.body.data$`_embedded`$events$`_embedded`$venues[[j]]$state$name)
-  city.name <- c(city.name, 
-                 sports.body.data$`_embedded`$events$`_embedded`$venues[[j]]$city$name)
-}
-# event.location = data.frame(state = state.name, city  = city.name)
-sports.result.data <- 
-  sports.result.data %>% 
-  mutate(state = state.name,city = city.name)
+sports.result.data <- NULL
+for (page in c(0:4)) {
+  sports.events.url <- paste0(base.url, "events.json?apikey=",api.key,
+                              "&size=200&countryCode=US&classificationName=Sports&page=", page)
+  sports.events.response <- GET(sports.events.url)
+  sports.body.data <- fromJSON(content(sports.events.response,"text"))
+  sports.result.data.page <- flatten(sports.body.data$`_embedded`$events)
+  sports.result.data.page <- select(sports.result.data.page, name, url, 
+                               dates.start.localDate, dates.start.localTime, 
+                               dates.timezone, promoter.name, priceRanges)
   
+  # add state and city to event data
+  state.name <- c()
+  city.name <- c()
+  for (j in c(1:200)){
+    state.name <-c(state.name, 
+                   sports.body.data$`_embedded`$events$`_embedded`$venues[[j]]$state$name)
+    city.name <- c(city.name, 
+                   sports.body.data$`_embedded`$events$`_embedded`$venues[[j]]$city$name)
+  }
+
+  # event.location = data.frame(state = state.name, city  = city.name)
+  sports.result.data.page <- 
+    sports.result.data.page %>% 
+    mutate(state = state.name,city = city.name)
+  
+  if(is.null(sports.result.data)){
+    sports.result.data <- sports.result.data.page
+  } else{
+    sports.result.data <- rbind(sports.result.data, sports.result.data.page)
+  }
+}
 
 sports.pop.data <- sports.result.data %>% group_by(state, city) %>% 
   summarise(Event_Number = n()) %>% 
   mutate(hover = paste0(state," ,",city,"<br>",Event_Number))
-
 
 # get US map data and merge to event data
 map.data <- GetCityGeo(paste0(sports.result.data$city, ",", 
@@ -131,3 +139,15 @@ sports.pop.max.state <- sports.pop.max.state[!duplicated(sports.pop.max.state), 
 sports.pop.min <- min(sports.result.data$event.count)
 sports.pop.min.state <- filter(sports.result.data, event.count == sports.pop.min) %>% select(state)
 sports.pop.min.state <- sports.pop.min.state[!duplicated(sports.pop.min.state), ]
+
+sports.pop.report <- paste0("This is the data report for sports event popularity. 
+                             The minimum number of event(s) of a state is ", 
+                            sports.pop.min, 
+                            " and the state(s) is ", sports.pop.min.state, 
+                            ". The maximum number of events of a state is ", 
+                            sports.pop.max, " and the state(s) is ", 
+                            sports.pop.max.state, 
+                            ". The average number of events per state is ",
+                            sports.pop.mean, " and the median is ", 
+                            sports.pop.median, ".")
+

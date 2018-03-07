@@ -1,5 +1,5 @@
 library(shiny)
-source("main.R")
+source("sportspopmain.R")
 library(shinyjs)
 library(plotly)
 
@@ -42,17 +42,8 @@ ui <- htmlTemplate(
                    "sport_pop",
                    #-----Sport Popularity------
                    tags$h3("Sport Popularity Page"),
-                   tags$h4("Data Report:"),
-                   tags$body(paste0("This is the data report for sports event popularity. 
-                             The minimum number of event(s) of a state is ", 
-                                    sports.pop.min, 
-                                    " and the state(s) is ", sports.pop.min.state, 
-                                    ". The maximum number of events of a state is ", 
-                                    sports.pop.max, " and the state(s) is ", 
-                                    sports.pop.max.state, 
-                                    ". The average number of events per state is ",
-                                    sports.pop.mean, " and the median is ", 
-                                    sports.pop.median, ".")),
+                   tags$h4("Data Report"),
+                   tags$p(sports.pop.report),
                    tags$h4("Sports Popularity Map"),
                    plotlyOutput('sports_pop_map'),
                    tags$h4("Number of Sports Events per State"),
@@ -71,3 +62,4 @@ ui <- htmlTemplate(
     )
   ))
 )
+shinyUI(ui)

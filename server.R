@@ -1,5 +1,5 @@
 library(shiny)
-source("main.R")
+source("sportspopmain.R")
 library(shinyjs)
 library(plotly)
 source("api.R")
@@ -52,6 +52,8 @@ server <- function(input, output, session) {
   output$sports_pop_bar <- renderPlotly({
     return(sports.pop.graph)
   })
+  
+  
   
 }
 shinyServer(server)
