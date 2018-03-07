@@ -25,20 +25,20 @@ ui <- htmlTemplate(
         tags$h3("Group Members:"),
         tags$b(tags$p("Jeeyoung Kim, Kosuke Terada, Ramon Qu, Andrew Thai")),
         tags$h3("Data Set Description:"),
-        tags$p("For out project, we are using Ticketmaster's api. The data set includes all the events that
+        HTML("<p>For our project, we are using Ticketmaster's api. The data set includes all the events that
                 are currently listed on Ticketmaster. We are able to access information such as the location of
                events, the type of event, search by genre, location, keyword, and view available offers for
                events. The api and description of the avaliable data is located at:
-               https://developer.ticketmaster.com/products-and-docs/apis/getting-started/ . The data for this set
+               <a href = 'https://developer.ticketmaster.com/products-and-docs/apis/getting-started/'> TicketMaster API Link </a> . The data for this set
                comes from data collected by Ticketmaster, Universe, FrontGate and Ticketmaster Resale.
                The data set would include all information that is available directly on the Ticketmaster
-               website. For our project, we chose to focus on sports and music for our subjects. From there, we found 
-                we categorized them under popularity and price trends. Our goal was to understand the trends of popularity of 
+               website. For our project, we chose to focus on sports and music for our subjects. From there,
+              we categorized them under popularity and price trends. Our goal was to understand the trends of popularity of 
                 cities and the corresponding prices for various events. This could be used by event coordinators planning 
                 future events and price them accordingly. Understanding the supply and demand can allow for maximum profit 
                 while keeping it attractive for fans. Sports fans can also see where there are the most amount of sports events 
                 so if they are interested in going to a city to see their favorite team, they can plan accordingly and find the 
-              price range and budget."),
+              price range and budget.</p>"),
         tags$br(),
         HTML('<script src="js/main-widget.js"></script>')
 
