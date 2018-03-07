@@ -64,15 +64,14 @@ for (page in c(0:4)) {
 }
 
 sports.pop.data <- sports.result.data %>% group_by(state, city) %>% 
-  summarise(Event_Number = n()) %>% 
+  dplyr::summarise(Event_Number = n()) %>% 
   mutate(hover = paste0(state," ,",city,"<br>",Event_Number))
 
 # get US map data and merge to event data
 map.data <- GetCityGeo(paste0(sports.result.data$city, ",", 
                               sports.result.data$state)) %>% 
   mutate(city = sports.result.data$city)
-sports.data.map <- left_join(sports.pop.data, map.data)
-sports.data.map <- sports.data.map[!duplicated(sports.data.map), ]
+sports.data.map <- left_join(sports.pop.data, unique(map.data))
 
 
 Sys.setenv('MAPBOX_TOKEN' = MAPBOX_TOKEN)
@@ -101,7 +100,7 @@ sports.pop.map <- sports.data.map %>%
 # mutate data to count 
 # number per state
 sports.events.count <- sports.result.data %>% group_by(state) %>%
-  summarise(event.count = n())
+  dplyr::summarise(event.count = n())
 sports.result.data <- left_join(sports.result.data, sports.events.count, by = "state")
 
 # line graph for all states

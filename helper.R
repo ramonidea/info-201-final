@@ -37,7 +37,6 @@ GetCityGeo <- function(names){
   name <- c()
   f <- FALSE
   for (i in names){
-    print(paste0("Checking", i))
     #Check the local saved file to see whether it has been checked before or not.
     if(i %in% cities.code$city){
       temp <- cities.code[cities.code$city == i,]
@@ -59,5 +58,3 @@ GetCityGeo <- function(names){
   }
   return(data.frame(long = long, lat = lat, city = name))
 }
-
-

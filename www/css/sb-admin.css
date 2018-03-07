@@ -1,3 +1,10 @@
+h5{
+  font-size: 1.5em;
+}
+
+
+
+
 .bg-dark{
   background-color: #6d7993;
 }
@@ -52,9 +59,6 @@ body.sticky-footer .content-wrapper {
   min-height: calc(100vh - 56px - 56px);
 }
 
-body.fixed-nav {
-  padding-top: 56px;
-}
 
 .content-wrapper {
   min-height: calc(100vh - 56px);
