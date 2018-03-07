@@ -105,16 +105,49 @@ GetGenres <- function(data) {
   return(genres)
 }
 
+#top 5 maximum events 
+
+top.min <- sea.la.ny %>% 
+  arrange(Minimum) %>%
+  select(name, Minimum, City) %>%
+  head()
+
+top.max <- sea.la.ny %>% 
+  arrange(-Maximum) %>%
+  select(name, Maximum, City) %>%
+  head()
+
 # Line graph of price ranges of three cities
-first.visualization <- function(inputdata){
+musicpri.visualization <- function(inputdata){
   p <- ggplot(data=inputdata,
        aes(x=Maximum, y=Minimum, colour=City)) +
       geom_line() +
+      facet_wrap('City') +
       scale_color_manual(values=c("#CC6666", "#9999CC", "#66CC99")) +
       labs(title="Price Range of Music Events in U.S.", 
       subtitle="Price across three cities in USD")
+  p <- 
   return(p)
 }
+
+p <- ggplot(data=sea.la.ny,
+            aes(x=Maximum, y=Minimum, colour=City)) +
+  geom_line() +
+  facet_wrap('City') + #take them out? 
+  scale_color_manual(values=c("#CC6666", "#9999CC", "#66CC99")) +
+  labs(title="Price Range of Music Events in U.S.", 
+       subtitle="Price across three cities (in USD)") 
+
+
+#TEST
+p <- plot_ly(data = sea.la.ny, x = Maximum, y = Minimum)
+
+             hoverinfo = text,
+             text = ~paste('City: ', City,
+                           '</br>Genre: ', Genre,
+                           '</br>min: ', Maximum,
+                           '</br>max:', Minimum))
+
 
 
 

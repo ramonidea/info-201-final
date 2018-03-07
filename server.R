@@ -59,7 +59,10 @@ server <- function(input, output, session) {
   })
   
   
+output$musicprice <- renderPlotly({
+  return(musicpri.visualization(sea.la.ny))
   
+})
 
     
  
