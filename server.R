@@ -53,7 +53,5 @@ server <- function(input, output, session) {
     return(sports.pop.graph)
   })
   
-  
-  
 }
 shinyServer(server)
