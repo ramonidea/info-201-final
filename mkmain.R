@@ -53,7 +53,7 @@ la.body.data <-
     simplifyVector = TRUE,
     simplifyDataFrame = TRUE
   )
-la.result.data <- flatten(la.body.data$`_embedded`$events)
+la.result.data <- la.body.data$`_embedded`$events
 
 ny.music.url <-
   paste0(
